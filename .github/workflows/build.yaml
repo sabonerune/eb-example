@@ -1,0 +1,43 @@
+name: build
+on:
+  push:
+    tags:
+      - "v*.*.*"
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Electron
+        run: npm run build
+
+      - name: Release Windows
+        if: startsWith(matrix.os, 'windows')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            dist/nsis-web/*
+            dist/*.zip
+
+      - name: Release Linux
+        if: startsWith(matrix.os, 'ubuntu')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            dist/*.AppImage
+            dist/*.tar.gz
