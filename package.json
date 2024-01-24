@@ -1,11 +1,11 @@
 {
   "name": "eb-example",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "main": "main.js",
   "description": "electron-updater example project",
   "author": "Matt Haggard",
   "scripts": {
-    "build": "electron-builder build --publish never"
+    "build": "electron-builder build --config electron-builder.config.js --publish never"
   },
   "devDependencies": {
     "electron": "^28.1.4",
@@ -14,39 +14,5 @@
   "dependencies": {
     "electron-log": "^5.1.0",
     "electron-updater": "^6.1.7"
-  },
-  "build": {
-    "appId": "com.github.sabonerune.eb-example",
-    "publish": [
-      {
-        "provider": "github",
-        "owner": "sabonerune",
-        "repo": "eb-example"
-      }
-    ],
-    "win": {
-      "target": [
-        {
-          "target": "nsis-web"
-        },
-        {
-          "target": "zip"
-        }
-      ]
-    },
-    "nsisWeb": {
-      "oneClick": false,
-      "artifactName":"${productName}-Setup-${version}.${ext}"
-    },
-    "linux": {
-      "target": [
-        {
-          "target": "AppImage"
-        },
-        {
-          "target": "tar.gz"
-        }
-      ]
-    }
   }
 }

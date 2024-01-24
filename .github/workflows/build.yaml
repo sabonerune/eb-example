@@ -33,6 +33,7 @@ jobs:
           files: |
             dist/nsis-web/*
             dist/*.zip
+          prerelease: true
 
       - name: Release Linux
         if: startsWith(matrix.os, 'ubuntu')
@@ -42,3 +43,4 @@ jobs:
             dist/*.AppImage
             dist/*.tar.gz
             dist/latest-linux.yml
+          prerelease: true
