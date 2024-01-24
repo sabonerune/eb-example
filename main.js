@@ -1,9 +1,11 @@
 // This is free and unencumbered software released into the public domain.
 // See LICENSE for details
 
-const {app, BrowserWindow, Menu} = require('electron');
+const { app, BrowserWindow, Menu } = require('electron');
 const log = require('electron-log');
-const {autoUpdater} = require("electron-updater");
+const { autoUpdater } = require("electron-updater");
+const fs = require("node:fs")
+const { join, dirname } = require("node:path")
 
 //-------------------------------------------------------------------
 // Logging
@@ -13,6 +15,7 @@ const {autoUpdater} = require("electron-updater");
 // This logging setup is not required for auto-updates to work,
 // but it sure makes debugging easier :)
 //-------------------------------------------------------------------
+autoUpdater.autoDownload = false
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = 'info';
 log.info('App starting...');
@@ -54,6 +57,10 @@ if (process.platform === 'darwin') {
 //-------------------------------------------------------------------
 let win;
 
+const winZipMarker = join(dirname(app.getPath("exe")), "WindowsZipInfo");
+const isWindowsZip = fs.existsSync(winZipMarker);
+log.info(`${winZipMarker} is ${isWindowsZip}`)
+
 function sendStatusToWindow(text) {
   log.info(text);
   win.webContents.send('message', text);
@@ -77,6 +84,9 @@ autoUpdater.on('checking-for-update', () => {
 })
 autoUpdater.on('update-available', (info) => {
   sendStatusToWindow('Update available.');
+  if (!isWindowsZip) {
+    autoUpdater.downloadUpdate();
+  }
 })
 autoUpdater.on('update-not-available', (info) => {
   sendStatusToWindow('Update not available.');
@@ -93,7 +103,7 @@ autoUpdater.on('download-progress', (progressObj) => {
 autoUpdater.on('update-downloaded', (info) => {
   sendStatusToWindow('Update downloaded');
 });
-app.on('ready', function() {
+app.on('ready', function () {
   // Create the Menu
   const menu = Menu.buildFromTemplate(template);
   Menu.setApplicationMenu(menu);
@@ -114,7 +124,7 @@ app.on('window-all-closed', () => {
 // This will immediately download an update, then install when the
 // app quits.
 //-------------------------------------------------------------------
-app.on('ready', function()  {
+app.on('ready', function () {
   autoUpdater.checkForUpdatesAndNotify();
 });
 

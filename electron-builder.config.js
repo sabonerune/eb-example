@@ -1,4 +1,5 @@
 // @ts-check
+const path = require("node:path")
 /** @type {import("electron-builder").Configuration} */
 const builderOptions = {
   appId: "com.github.sabonerune.eb-example",
@@ -32,7 +33,8 @@ const builderOptions = {
         target: "tar.gz",
       }
     ]
-  }
+  },
+  artifactBuildCompleted:path.resolve(__dirname, "build", "artifactBuildCompleted.js"),
 }
 
 module.exports = builderOptions;
