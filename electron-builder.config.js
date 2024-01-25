@@ -25,6 +25,7 @@ const builderOptions = {
     artifactName: "${productName}-Setup-${version}.${ext}",
   },
   linux: {
+    category: "Development",
     target: [
       {
         target: "AppImage",
