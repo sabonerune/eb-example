@@ -20,6 +20,9 @@ autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = 'info';
 log.info('App starting...');
 
+const targetDevice = "cpu";
+autoUpdater.channel = targetDevice;
+
 //-------------------------------------------------------------------
 // Define the menu
 //

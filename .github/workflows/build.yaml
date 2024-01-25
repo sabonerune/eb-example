@@ -9,10 +9,43 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-latest]
+        target_name:
+          - windows-cpu
+          - windows-gpu
+          - windows-cuda
+          - linux-cuda
+          - linux-cpu
+        include:
+          - target_name: windows-gpu
+            target_device: gpu
+            package_name: eb-example
+            os: windows-latest
+          - target_name: windows-cpu
+            target_device: cpu
+            package_name: eb-example-cpu
+            os: windows-latest
+          - target_name: windows-cuda
+            target_device: cuda
+            package_name: eb-example-cuda
+            os: windows-latest
+          - target_name: linux-cuda
+            target_device: cuda
+            package_name: eb-example
+            os: ubuntu-latest
+          - target_name: linux-cpu
+            target_device: cpu
+            package_name: eb-example-cpu
+            os: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Fix code
+        run: |
+          sed "s/\"name\": \"eb-example\",/\"name\": \"${{matrix.package_name}}\",/" package.json > package.json.tmp
+          mv package.json.tmp package.json
+          sed "s/const targetDevice = \"cpu\";/const targetDevice = \"${{matrix.target_device}}\";/" main.js > main.js.tmp
+          mv main.js.tmp main.js
 
       - name: Setup Node.js environment
         uses: actions/setup-node@v4
@@ -25,6 +58,8 @@ jobs:
 
       - name: Build Electron
         run: npm run build
+        env:
+          TARGET_DEVICE: ${{matrix.target_device}}
 
       - name: Release Windows
         if: startsWith(matrix.os, 'windows')
@@ -42,5 +77,5 @@ jobs:
           files: |
             dist/*.AppImage
             dist/*.tar.gz
-            dist/latest-linux.yml
+            dist/*-linux.yml
           prerelease: true
