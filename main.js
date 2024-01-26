@@ -22,6 +22,7 @@ log.info('App starting...');
 
 const targetDevice = "cpu";
 autoUpdater.channel = targetDevice;
+autoUpdater.allowPrerelease = true;
 
 //-------------------------------------------------------------------
 // Define the menu

@@ -2,7 +2,7 @@ name: build
 on:
   push:
     tags:
-      - "v*.*.*"
+      - "v*.*.*-*"
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -37,6 +37,10 @@ jobs:
             package_name: eb-example-cpu
             os: ubuntu-latest
     steps:
+      - run: "[ ${TAG_NAME#v*.*.*-} == ${{matrix.target_device}} ]"
+        shell: bash
+        env:
+          TAG_NAME: ${{github.ref_name}}
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -44,6 +48,8 @@ jobs:
         shell: bash
         run: |
           sed "s/\"name\": \"eb-example\",/\"name\": \"${{matrix.package_name}}\",/" package.json > package.json.tmp
+          mv package.json.tmp package.json
+          sed "s/\"version\": \"0.0.6\",/\"version\": \"0.0.6-${{matrix.target_device}}\",/" package.json > package.json.tmp
           mv package.json.tmp package.json
           sed "s/const targetDevice = \"cpu\";/const targetDevice = \"${{matrix.target_device}}\";/" main.js > main.js.tmp
           mv main.js.tmp main.js
